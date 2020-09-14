@@ -1,0 +1,31 @@
+game=/lud/board/war/other/Surakarta.lud
+START GAME OPTIONS
+Version/Official
+END GAME OPTIONS
+RNG internal state=-48,-53,-13,-120,-83,3,54,-115
+Move=[Move:from=0,to=0,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=0,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=1,to=1,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=1,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=2,to=2,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=2,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=3,to=3,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=3,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=4,to=4,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=4,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=5,to=5,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=5,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=6,to=6,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=6,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=7,to=7,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=7,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=8,to=8,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=8,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=9,to=9,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=9,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=10,to=10,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=10,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=11,to=11,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=11,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=24,to=24,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=24,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=25,to=25,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=25,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=26,to=26,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=26,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=27,to=27,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=27,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=28,to=28,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=28,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=29,to=29,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=29,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=30,to=30,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=30,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=31,to=31,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=31,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=32,to=32,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=32,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=33,to=33,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=33,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=34,to=34,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=34,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+Move=[Move:from=35,to=35,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=35,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Vertex,invisible=null,masked=null]]
+rankings=0.0,0.0,0.0
+SANDBOX=false
