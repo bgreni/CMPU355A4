@@ -1,3 +1,5 @@
 Agent.class
 .DS_Store
 .vscode/
+libs/ludii.trl
+libs/ludii_preferences.json
