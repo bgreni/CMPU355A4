@@ -7,7 +7,7 @@ import main.collections.FastArrayList;
 import util.AI;
 import util.Context;
 import util.Move;
-// import utils.AIUtils;
+import utils.AIUtils;
 
 /**
  * @author Brian Grenier
