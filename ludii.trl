@@ -37,6 +37,6 @@ Move=[Move:from=61,to=61,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,level
 Move=[Move:from=62,to=62,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=62,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=63,to=63,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=63,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=12,to=20,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=12,levelA=-1,locnB=20,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=52,to=45,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=52,levelA=-1,locnB=45,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
+Move=[Move:from=48,to=41,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=48,levelA=-1,locnB=41,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
 rankings=0.0,0.0,0.0
 SANDBOX=false
