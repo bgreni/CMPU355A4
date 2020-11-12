@@ -108,7 +108,7 @@ public class PawnStarsAgent extends AI
 			
 			// This computes utilities for all players at the of the playout,
 			// which will all be values in [-1.0, 1.0]
-			final double[] utilities = AIUtils.utilities(contextEnd);
+			final double[] utilities = AIUtils.utilities(contextEnd.state());
 			
 			// Backpropagate utilities through the tree
 			while (current != null)

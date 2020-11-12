@@ -1,0 +1,42 @@
+game=/lud/board/race/reach/Breakthrough.lud
+START GAME OPTIONS
+Board/Square
+Board Size/8x8
+END GAME OPTIONS
+RNG internal state=-90,52,102,119,-101,85,98,-106
+Move=[Move:from=0,to=0,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=0,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=1,to=1,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=1,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=2,to=2,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=2,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=3,to=3,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=3,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=4,to=4,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=4,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=5,to=5,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=5,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=6,to=6,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=6,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=7,to=7,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=7,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=8,to=8,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=8,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=9,to=9,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=9,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=10,to=10,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=10,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=11,to=11,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=11,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=12,to=12,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=12,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=13,to=13,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=13,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=14,to=14,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=14,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=15,to=15,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=15,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=48,to=48,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=48,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=49,to=49,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=49,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=50,to=50,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=50,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=51,to=51,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=51,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=52,to=52,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=52,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=53,to=53,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=53,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=54,to=54,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=54,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=55,to=55,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=55,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=56,to=56,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=56,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=57,to=57,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=57,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=58,to=58,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=58,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=59,to=59,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=59,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=60,to=60,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=60,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=61,to=61,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=61,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=62,to=62,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=62,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=63,to=63,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=63,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=12,to=20,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=12,levelA=-1,locnB=20,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
+Move=[Move:from=52,to=45,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=52,levelA=-1,locnB=45,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
+rankings=0.0,0.0,0.0
+SANDBOX=false
