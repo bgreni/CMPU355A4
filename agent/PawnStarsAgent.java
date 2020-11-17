@@ -80,7 +80,7 @@ public class PawnStarsAgent extends ExpertPolicy
 	protected FVector rootValueEstimates = null;
 	
 	/** The number of players in the game we're currently playing */
-	protected int numPlayersInGame = 0;
+	protected int numPlayersInGame = 2;
 	
 	/** Remember if we proved a win in one of our searches */
 	protected boolean provedWin = false;
@@ -96,7 +96,7 @@ public class PawnStarsAgent extends ExpertPolicy
 	
 	/** If true at end of a search, it means we searched full tree (probably proved a draw) */
 	protected boolean searchedFullTree = false;
-	private final int numPlayers = 2;
+//	private final int numPlayers = 2;
 	
 	public PawnStarsAgent()
 	{
@@ -205,6 +205,7 @@ public class PawnStarsAgent extends ExpertPolicy
 				final Move m = sortedRootMoves.get(i);
 				game.apply(copyContext, m);
 				final float value = alphaBeta(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
+//				final float value = negamax(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
 				
 				if (shouldInterrupt(stopTime))	// time to abort search
 				{
@@ -303,6 +304,8 @@ public class PawnStarsAgent extends ExpertPolicy
 			sortedRootMoves.add(scoredMoves.get(i).move);
 		}
 	}
+
+
 	
 	/**
 	 * Recursive alpha-beta search function.
@@ -317,7 +320,7 @@ public class PawnStarsAgent extends ExpertPolicy
 	 */
 	public float alphaBeta
 	(
-		final Context context, 
+		final Context context,
 		final int depth,
 		final float inAlpha,
 		final float inBeta,
@@ -335,28 +338,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 		else if (depth == 0)
 		{
-			searchedFullTree = false;
-			
-			// heuristic evaluation
-			float heuristicScore = heuristicValueFunction.computeValue(
-					context, maximisingPlayer, ABS_HEURISTIC_WEIGHT_THRESHOLD);
-			
-			for (final int opp : opponents(maximisingPlayer))
-			{
-				if (context.state().active(opp))
-					heuristicScore -= heuristicValueFunction.computeValue(context, opp, ABS_HEURISTIC_WEIGHT_THRESHOLD);
-				else if (context.state().winners().contains(opp))
-					heuristicScore -= PARANOID_OPP_WIN_SCORE;
-			}
-			
-			// Invert scores if players swapped
-			if (state.playerToAgent(maximisingPlayer) != maximisingPlayer)
-				heuristicScore = -heuristicScore;
-			
-			minHeuristicEval = Math.min(minHeuristicEval, heuristicScore);
-			maxHeuristicEval = Math.max(maxHeuristicEval, heuristicScore);
-			
-			return heuristicScore;
+			return evalHeuristic(context, maximisingPlayer, state);
 		}
 		
 		final Game game = context.game();
@@ -382,13 +364,13 @@ public class PawnStarsAgent extends ExpertPolicy
 				{
 					return 0;
 				}
-				
+
 				if (value > score)
 					score = value;
-				
+
 				if (score > alpha)
 					alpha = score;
-				
+
 				if (alpha >= beta)	// beta cut-off
 					break;
 			}
@@ -410,7 +392,7 @@ public class PawnStarsAgent extends ExpertPolicy
 				{
 					return 0;
 				}
-				
+
 				if (value < score)
 					score = value;
 				
@@ -423,6 +405,29 @@ public class PawnStarsAgent extends ExpertPolicy
 			
 			return score;
 		}
+	}
+
+	private float evalHeuristic(Context context, final int maximisingPlayer, State state) {
+		searchedFullTree = false;
+
+		// heuristic evaluation
+		float heuristicScore = heuristicValueFunction.computeValue(
+				context, maximisingPlayer, ABS_HEURISTIC_WEIGHT_THRESHOLD);
+
+		final int opp = opponents(maximisingPlayer)[0];
+		if (context.state().active(opp))
+			heuristicScore -= heuristicValueFunction.computeValue(context, opp, ABS_HEURISTIC_WEIGHT_THRESHOLD);
+		else if (context.state().winners().contains(opp))
+			heuristicScore -= PARANOID_OPP_WIN_SCORE;
+
+		// Invert scores if players swapped
+		if (state.playerToAgent(maximisingPlayer) != maximisingPlayer)
+			heuristicScore = -heuristicScore;
+
+		minHeuristicEval = Math.min(minHeuristicEval, heuristicScore);
+		maxHeuristicEval = Math.max(maxHeuristicEval, heuristicScore);
+
+		return heuristicScore;
 	}
 	
 	/**
