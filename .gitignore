@@ -3,3 +3,4 @@ Agent.class
 .vscode/
 libs/ludii.trl
 libs/ludii_preferences.json
+.idea/

@@ -16,7 +16,7 @@ import utils.AIUtils;
  * https://github.com/Ludeme/LudiiExampleAI/blob/master/src/mcts/ExampleUCT.java
  * 
  */
-public class PawnStarsAgent extends AI
+public class PawnStarsAgentMCTS extends AI
 {
 	protected int player = -1;
 
