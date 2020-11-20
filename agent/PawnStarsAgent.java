@@ -33,10 +33,10 @@ import utils.AIUtils;
 public class PawnStarsAgent extends ExpertPolicy
 {
 	// init alpha as negative infinity
-	private static final float ALPHA_INIT = Float.NEGATIVE_INFINITY;
+	private static final float ALPHA_INIT = 0.f;
 
 	// init beta as positive infinity
-	private static final float BETA_INIT = -ALPHA_INIT;
+	private static final float BETA_INIT = 10.f;
 	
 	/** unused (I think) */
 	private static final float PARANOID_OPP_WIN_SCORE = 10000.f;
@@ -204,8 +204,7 @@ public class PawnStarsAgent extends ExpertPolicy
 				final Context copyContext = new Context(context);
 				final Move m = sortedRootMoves.get(i);
 				game.apply(copyContext, m);
-				final float value = alphaBeta(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
-//				final float value = negamax(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
+				final float value = BNS(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
 				
 				if (shouldInterrupt(stopTime))	// time to abort search
 				{
@@ -227,11 +226,11 @@ public class PawnStarsAgent extends ExpertPolicy
 					bestMove = m;
 				}
 				
-				if (score > alpha)		// new lower bound
-					alpha = score;
+//				if (score > alpha)		// new lower bound
+//					alpha = score;
 				
-				if (alpha >= beta)		// beta cut-off
-					break;
+//				if (alpha >= beta)		// beta cut-off
+//					break;
 			}
 			
 			// alpha-beta is over, this is iterative deepening stuff again
@@ -305,6 +304,43 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
+
+	public float BNS(
+			final Context context,
+			final int depth,
+			float alpha,
+			float beta,
+			final int maximisingPlayer,
+			final long stopTime
+	) {
+		Game game = context.game();
+		final FastArrayList<Move> moves = game.moves(context).moves();
+		int subtreeCount = moves.size();
+		int betterCount = 0;
+		float bestVal = 0;
+		do {
+			betterCount = 0;
+			float test = nextGuess(alpha, beta, (float)subtreeCount);
+			for (int i = 0; i < subtreeCount; i++) {
+				final Context copyContext = new Context(context);
+				final Move m = moves.get(i);
+				game.apply(copyContext, m);
+				final float currVal = alphaBeta(copyContext, depth - 1, -test, -(test - 1), maximisingPlayer, stopTime);
+				if (currVal >= test) {
+					betterCount += 1;
+					bestVal = currVal;
+				}
+			}
+			alpha = test;
+
+		} while (!(beta - alpha < 2) || betterCount == 1);
+
+		return bestVal;
+	}
+
+	private float nextGuess(final float alpha, final float beta, final float subtreeCount) {
+		return alpha + (beta - alpha) * (subtreeCount - 1) / subtreeCount;
+	}
 
 	
 	/**
