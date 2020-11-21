@@ -3,7 +3,7 @@ START GAME OPTIONS
 Board/Square
 Board Size/8x8
 END GAME OPTIONS
-RNG internal state=-65,-89,28,61,68,-126,-59,86
+RNG internal state=-22,71,-98,-116,-25,-42,79,43
 Move=[Move:from=0,to=0,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=0,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=1,to=1,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=1,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=2,to=2,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=2,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
@@ -36,5 +36,11 @@ Move=[Move:from=60,to=60,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,level
 Move=[Move:from=61,to=61,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=61,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=62,to=62,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=62,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=63,to=63,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=63,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
+Move=[Move:from=9,to=16,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=9,levelA=-1,locnB=16,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
+Move=[Move:from=55,to=47,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=55,levelA=-1,locnB=47,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
+Move=[Move:from=14,to=23,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=14,levelA=-1,locnB=23,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
+Move=[Move:from=54,to=45,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=54,levelA=-1,locnB=45,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
+Move=[Move:from=16,to=24,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=16,levelA=-1,locnB=24,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
+Move=[Move:from=61,to=54,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=61,levelA=-1,locnB=54,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
 rankings=0.0,0.0,0.0
 SANDBOX=false

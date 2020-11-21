@@ -116,7 +116,7 @@ public class PawnStarsAgent extends ExpertPolicy
 
 		if (maxSeconds <= 0) {
 			// complain if max seconds isn't greater than zero
-			throw new MaxSecondsNotSetException("maxSeconds not zero");
+			throw new MaxSecondsNotSetException("maxSeconds not greater than zero");
 		}
 
 		provedWin = false;
@@ -127,7 +127,6 @@ public class PawnStarsAgent extends ExpertPolicy
 		final long stopTime = startTime + (long) (maxSeconds * 1000);
 		
 		lastReturnedMove = iterativeDeepening(game, context, maxSeconds, depthLimit, 1);
-
 		return lastReturnedMove;
 	}
 
@@ -195,50 +194,60 @@ public class PawnStarsAgent extends ExpertPolicy
 			float score = rootAlphaInit;
 			float alpha = rootAlphaInit;
 			final float beta = rootBetaInit;
-			
+
 			// best move during this particular search
-			Move bestMove = sortedRootMoves.get(0);
-			
-			for (int i = 0; i < numRootMoves; ++i)
-			{
-				final Context copyContext = new Context(context);
-				final Move m = sortedRootMoves.get(i);
-				game.apply(copyContext, m);
-				final float value = BNS(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
-				
-				if (shouldInterrupt(stopTime))	// time to abort search
-				{
-					bestMove = null;
-					break;
-				}
-				
-				final int origMoveIdx = currentRootMoves.indexOf(m);
-				if (origMoveIdx >= 0)
-				{
-					rootValueEstimates.set(origMoveIdx, (float) scoreToValueEst(value, rootAlphaInit, rootBetaInit));
-				}
-				
-				moveScores.set(i, value);
-				
-				if (value > score)		// new best move found
-				{
-					score = value;
-					bestMove = m;
-				}
-				
+//			Move bestMove = sortedRootMoves.get(0);
+			final Context copyContext = new Context(context);
+			final Result best = BNS(copyContext, searchDepth, alpha, beta, maximisingPlayer, stopTime);
+			Move bestMove = null;
+			System.out.println("BEST: "  + best.score);
+			if (score < best.score) {
+				score = best.score;
+				bestMove = best.move;
+			}
+
+//			if (score > alpha)
+//				alpha = score;
+
+//			for (int i = 0; i < numRootMoves; ++i)
+//			{
+//				final Move m = sortedRootMoves.get(i);
+//				game.apply(copyContext, m);
+//				final float value = BNS(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
+//
+//				if (shouldInterrupt(stopTime))	// time to abort search
+//				{
+//					bestMove = null;
+//					break;
+//				}
+//
+//				final int origMoveIdx = currentRootMoves.indexOf(m);
+//				if (origMoveIdx >= 0)
+//				{
+//					rootValueEstimates.set(origMoveIdx, (float) scoreToValueEst(value, rootAlphaInit, rootBetaInit));
+//				}
+//
+//				moveScores.set(i, value);
+//
+//				if (value > score)		// new best move found
+//				{
+//					score = value;
+//					bestMove = m;
+//				}
+//
 //				if (score > alpha)		// new lower bound
 //					alpha = score;
-				
+//
 //				if (alpha >= beta)		// beta cut-off
 //					break;
-			}
-			
+//			}
+
 			// alpha-beta is over, this is iterative deepening stuff again
-			
+
 			if (bestMove != null)		// search was not interrupted
 			{
 				estimatedRootScore = score;
-				
+
 				if (score == rootBetaInit)
 				{
 					// we've just proven a win, so we can return best move
@@ -262,7 +271,7 @@ public class PawnStarsAgent extends ExpertPolicy
 					analysisReport = friendlyName + " completed search of depth " + searchDepth + " (no proven win or loss).";
 					return bestMove;
 				}
-					
+
 				bestMoveCompleteSearch = bestMove;
 			}
 			else
@@ -270,20 +279,20 @@ public class PawnStarsAgent extends ExpertPolicy
 				// decrement because we didn't manage to complete this search
 				--searchDepth;
 			}
-			
+
 			if (shouldInterrupt(stopTime))
 			{
 				// we need to return
 				analysisReport = friendlyName + " completed search of depth " + searchDepth + ".";
 				return bestMoveCompleteSearch;
 			}
-			
+
 			sortMoves(scoredMoves, moveScores, numRootMoves);
-			
+
 			// clear the vector of scores
 			moveScores.fill(0, numRootMoves, 0.f);
 		}
-		
+
 		analysisReport = friendlyName + " completed search of depth " + searchDepth + ".";
 		return bestMoveCompleteSearch;
 	}
@@ -304,8 +313,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
-
-	public float BNS(
+	public Result BNS(
 			final Context context,
 			final int depth,
 			float alpha,
@@ -318,6 +326,8 @@ public class PawnStarsAgent extends ExpertPolicy
 		int subtreeCount = moves.size();
 		int betterCount = 0;
 		float bestVal = 0;
+		Move bestMove = moves.get(0);
+
 		do {
 			betterCount = 0;
 			float test = nextGuess(alpha, beta, (float)subtreeCount);
@@ -325,17 +335,26 @@ public class PawnStarsAgent extends ExpertPolicy
 				final Context copyContext = new Context(context);
 				final Move m = moves.get(i);
 				game.apply(copyContext, m);
-				final float currVal = alphaBeta(copyContext, depth - 1, -test, -(test - 1), maximisingPlayer, stopTime);
+				final float currVal = -alphaBeta(copyContext, depth - 1, -(test), -(test-1), maximisingPlayer, stopTime);
+//				System.out.println("VAL: " + currVal + " TEST: " + test);
 				if (currVal >= test) {
+					System.out.println("GOOD MOVE FOUND");
 					betterCount += 1;
 					bestVal = currVal;
+					bestMove = m;
+				}
+
+				if (shouldInterrupt(stopTime)) {
+					System.out.println("Interrupted");
+					return new Result(bestMove, bestVal);
 				}
 			}
 			alpha = test;
+			subtreeCount -= betterCount;
 
-		} while (!(beta - alpha < 2) || betterCount == 1);
-
-		return bestVal;
+		} while (!(beta - alpha < 2 || betterCount == 1));
+//		System.out.println("BrokeLoop");
+		return new Result(bestMove, bestVal);
 	}
 
 	private float nextGuess(final float alpha, final float beta, final float subtreeCount) {
@@ -659,6 +678,16 @@ public class PawnStarsAgent extends ExpertPolicy
 	private class MaxSecondsNotSetException extends RuntimeException {
 		public MaxSecondsNotSetException(String message) {
 			super(message);
+		}
+	}
+
+	private class Result {
+		public Move move;
+		public float score;
+
+		public Result(Move move, float score) {
+			this.move = move;
+			this.score = score;
 		}
 	}
 }
