@@ -3,10 +3,7 @@ package agent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.Throwable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import expert_iteration.ExItExperience;
@@ -78,6 +75,7 @@ public class PawnStarsAgent extends ExpertPolicy
 	
 	/** Value estimates of moves available in root */
 	protected FVector rootValueEstimates = null;
+	protected FVector lastRoundEstimates = null;
 	
 	/** The number of players in the game we're currently playing */
 	protected int numPlayersInGame = 2;
@@ -97,6 +95,7 @@ public class PawnStarsAgent extends ExpertPolicy
 	/** If true at end of a search, it means we searched full tree (probably proved a draw) */
 	protected boolean searchedFullTree = false;
 //	private final int numPlayers = 2;
+	final private Map<Long, Float> transpositionTable = new HashMap<Long, Float>();
 	
 	public PawnStarsAgent()
 	{
@@ -113,7 +112,6 @@ public class PawnStarsAgent extends ExpertPolicy
 		final int maxDepth
 	)
 	{
-
 		if (maxSeconds <= 0) {
 			// complain if max seconds isn't greater than zero
 			throw new MaxSecondsNotSetException("maxSeconds not greater than zero");
@@ -123,8 +121,8 @@ public class PawnStarsAgent extends ExpertPolicy
 		final int depthLimit = maxDepth > 0 ? maxDepth : Integer.MAX_VALUE;
 		lastSearchedRootContext = context;
 		
-		final long startTime = System.currentTimeMillis();
-		final long stopTime = startTime + (long) (maxSeconds * 1000);
+//		final long startTime = System.currentTimeMillis();
+//		final long stopTime = startTime + (long) (maxSeconds * 1000);
 		
 		lastReturnedMove = iterativeDeepening(game, context, maxSeconds, depthLimit, 1);
 		return lastReturnedMove;
@@ -163,6 +161,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		final int startDepth
 	)
 	{
+		game.board().graph().cells().get(0).
 		final long startTime = System.currentTimeMillis();
 		long stopTime = (maxSeconds > 0.0) ? startTime + (long) (maxSeconds * 1000) : Long.MAX_VALUE;
 
@@ -170,6 +169,10 @@ public class PawnStarsAgent extends ExpertPolicy
 		
 		final int numRootMoves = sortedRootMoves.size();
 		final List<ScoredMove> scoredMoves = new ArrayList<ScoredMove>(sortedRootMoves.size());
+		List<ScoredMove> lastRoundScoredMoves = new ArrayList<ScoredMove>(numRootMoves);
+		for (int i = 0; i < numRootMoves; i++) {
+			lastRoundScoredMoves.add(new ScoredMove(null, 0.f));
+		}
 		
 		// Vector for visualisation purposes
 		rootValueEstimates = new FVector(currentRootMoves.size());
@@ -199,25 +202,12 @@ public class PawnStarsAgent extends ExpertPolicy
 			Move bestMove = sortedRootMoves.get(0);
 
 
-//			final Context copyContext = new Context(context);
-//			final Result best = BNS(copyContext, searchDepth, alpha, beta, maximisingPlayer, stopTime);
-//			Move bestMove = null;
-//			System.out.println("BEST: "  + best.score);
-//			if (score < best.score) {
-//				score = best.score;
-//				bestMove = best.move;
-//			}
-
-//			if (score > alpha)
-//				alpha = score;
-
 			for (int i = 0; i < numRootMoves; ++i)
 			{
 				final Context copyContext = new Context(context);
 				final Move m = sortedRootMoves.get(i);
 				game.apply(copyContext, m);
-				final float value = MTDF(copyContext, searchDepth - 1,  0,maximisingPlayer, stopTime);
-//				final float value = alphaBeta(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
+				final float value = MTDF(copyContext, searchDepth - 1, lastRoundScoredMoves.get(i).score, maximisingPlayer, stopTime);
 				if (shouldInterrupt(stopTime))	// time to abort search
 				{
 					bestMove = null;
@@ -289,9 +279,8 @@ public class PawnStarsAgent extends ExpertPolicy
 				analysisReport = friendlyName + " completed search of depth " + searchDepth + ".";
 				return bestMoveCompleteSearch;
 			}
-
 			sortMoves(scoredMoves, moveScores, numRootMoves);
-
+			lastRoundScoredMoves = scoredMoves;
 			// clear the vector of scores
 			moveScores.fill(0, numRootMoves, 0.f);
 		}
@@ -324,74 +313,87 @@ public class PawnStarsAgent extends ExpertPolicy
 			final long stopTime
 	) {
 		float g = f;
-		float upperBound = 100000000.f;
+		float upperBound = 1000000.f;
 		float lowerBound = -upperBound;
-
+		int numIters = 0;
 		while (lowerBound < upperBound) {
-
+			numIters++;
 			float beta = Math.max(g, lowerBound + 1);
-
-			g = alphaBeta(context, depth, beta-1, beta, maximisingPlayer, stopTime);
-
+			final Context copyContext = new Context(context);
+			g = alphaBeta(copyContext, depth, beta-1, beta, maximisingPlayer, stopTime);
+//			System.out.println("G: " + g);
 			if (g < beta) {
 				upperBound = g;
 			} else {
 				lowerBound = g;
 			}
-
-			if (shouldInterrupt(stopTime))
+//			System.out.println("BOUNDS: " + lowerBound + " " + upperBound);
+			if (shouldInterrupt(stopTime)) {
+				System.out.println("ITERS_INTER: " + numIters);
 				return g;
+			}
 		}
+		System.out.println("ITERS: " + numIters);
 		return g;
 	}
 
-	public Result BNS(
+
+
+
+	public float negabeta(
 			final Context context,
 			final int depth,
-			float alpha,
-			float beta,
+			final float inAlpha,
+			final float inBeta,
 			final int maximisingPlayer,
 			final long stopTime
 	) {
-		Game game = context.game();
-		final FastArrayList<Move> moves = game.moves(context).moves();
-		int subtreeCount = moves.size();
-		int betterCount = 0;
-		float bestVal = 0;
-		Move bestMove = moves.get(0);
+		final Trial trial = context.trial();
+		final State state = context.state();
 
-		do {
-			betterCount = 0;
-			float test = nextGuess(alpha, beta, (float)subtreeCount);
-			for (int i = 0; i < subtreeCount; i++) {
-				final Context copyContext = new Context(context);
-				final Move m = moves.get(i);
-				game.apply(copyContext, m);
-				final float currVal = -alphaBeta(copyContext, depth - 1, -(test), -(test-1), maximisingPlayer, stopTime);
-//				System.out.println("VAL: " + currVal + " TEST: " + test);
-				if (currVal >= test) {
-					System.out.println("GOOD MOVE FOUND");
-					betterCount += 1;
-					bestVal = currVal;
-					bestMove = m;
-				}
+		if (trial.over() || !context.state().active(maximisingPlayer))
+		{
+			// terminal node (at least for maximising player)
+			return (float) AIUtils.agentUtilities(context.state())[maximisingPlayer] * BETA_INIT;
+		}
+		else if (depth == 0)
+		{
+			return evalHeuristic(context, maximisingPlayer, state);
+		}
 
-				if (shouldInterrupt(stopTime)) {
-					System.out.println("Interrupted");
-					return new Result(bestMove, bestVal);
-				}
+		final Game game = context.game();
+
+		final FastArrayList<Move> legalMoves = game.moves(context).moves();
+		final int numLegalMoves = legalMoves.size();
+		float alpha = inAlpha;
+		float beta = inBeta;
+		for (int i = 0; i < numLegalMoves; ++i) {
+			final Context copyContext = new Context(context);
+			final Move m = legalMoves.get(i);
+			game.apply(copyContext, m);
+			final float value = -negabeta(copyContext, depth - 1, -beta, -alpha, maximisingPlayer, stopTime);
+
+			if (shouldInterrupt(stopTime))	// time to abort search
+			{
+				return 0;
 			}
-			alpha = test;
-			subtreeCount -= betterCount;
 
-		} while (!(beta - alpha < 2 || betterCount == 1));
-//		System.out.println("BrokeLoop");
-		return new Result(bestMove, bestVal);
+			if (value > alpha)
+				alpha = value;
+			if (value >= beta)
+				return value;
+		}
+
+		return alpha;
 	}
 
-	private float nextGuess(final float alpha, final float beta, final float subtreeCount) {
-		return alpha + (beta - alpha) * (subtreeCount - 1) / subtreeCount;
+
+	private float storeResult(long hash, float value) {
+		transpositionTable.put(hash, value);
+		return value;
 	}
+
+
 
 	
 	/**
@@ -417,7 +419,8 @@ public class PawnStarsAgent extends ExpertPolicy
 	{
 		final Trial trial = context.trial();
 		final State state = context.state();
-		
+//
+
 		if (trial.over() || !context.state().active(maximisingPlayer))
 		{
 			// terminal node (at least for maximising player)
@@ -489,7 +492,7 @@ public class PawnStarsAgent extends ExpertPolicy
 				if (alpha >= beta)	// alpha cut-off
 					break;
 			}
-			
+
 			return score;
 		}
 	}
@@ -713,6 +716,11 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
+
+
+
+
+
 	private class Result {
 		public Move move;
 		public float score;
@@ -722,4 +730,59 @@ public class PawnStarsAgent extends ExpertPolicy
 			this.score = score;
 		}
 	}
+
+
+
+	private float nextGuess(final float alpha, final float beta, final float subtreeCount) {
+		return alpha + (beta - alpha) * (subtreeCount - 1) / subtreeCount;
+	}
+
+	public Result BNS(
+			final Context context,
+			final int depth,
+			float alpha,
+			float beta,
+			final int maximisingPlayer,
+			final long stopTime
+	) {
+		Game game = context.game();
+		final FastArrayList<Move> moves = game.moves(context).moves();
+		int subtreeCount = moves.size();
+		int betterCount = 0;
+		float bestVal = 0;
+		Move bestMove = moves.get(0);
+		int iters = 0;
+
+//		final FVector moveScores = new FVector(subtreeCount);
+
+		do {
+			iters++;
+			betterCount = 0;
+			float test = nextGuess(alpha, beta, (float)subtreeCount);
+			for (int i = 0; i < subtreeCount; i++) {
+				final Context copyContext = new Context(context);
+				final Move m = moves.get(i);
+				game.apply(copyContext, m);
+				final float currVal = alphaBeta(copyContext, depth - 1, test, test+1, maximisingPlayer, stopTime);
+				if (currVal >= test) {
+					System.out.println("GOOD MOVE FOUND");
+					betterCount += 1;
+					bestVal = currVal;
+					bestMove = m;
+				}
+
+				if (shouldInterrupt(stopTime)) {
+					System.out.println("Interrupted");
+					System.out.println("ITERS: " + iters);
+					return new Result(bestMove, bestVal);
+				}
+			}
+			alpha = test;
+
+		} while (!(beta - alpha < 2 || betterCount == 1));
+		System.out.println("ITERS: " + iters);
+//		System.out.println("BrokeLoop");
+		return new Result(bestMove, bestVal);
+	}
+
 }
