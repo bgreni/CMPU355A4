@@ -104,7 +104,7 @@ public class PawnStarsAgent extends ExpertPolicy
 	{
 		friendlyName = "PawnStars";
 	}
-	
+
 	@Override
 	public Move selectAction
 	(
@@ -318,9 +318,33 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
-	public class zobristHash {
+	public class stateInfo {
+		int lowerBound;
+		int upperBound;
+		int Score;
 
-		private long hash;
+		public stateInfo(int lowerBound, int upperBound, int Score) {
+			this.lowerBound = lowerBound;
+			this.upperBound = upperBound;
+			this.Score = Score;
+		}
+
+		public int lowerbound() {
+			return lowerBound;
+		}
+
+		public int upperbound() {
+			return upperBound;
+		}
+
+		public int score() {
+			return Score;
+		}
+	}
+
+/*	public class zobristHash {
+
+		private int hash;
 		private final long[][] bitStrings;
 
 		public zobristHash(int pieces, int positions) {
@@ -359,7 +383,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		public int hashCode() {
 			return hash;
 		}
-	}
+	}*/
 
 	public float MTDF(
 			final Context context,
@@ -451,6 +475,7 @@ public class PawnStarsAgent extends ExpertPolicy
 	 * @param stopTime
 	 * @return (heuristic) evaluation of the reached state, from perspective of maximising player.
 	 */
+
 	public float alphaBeta
 	(
 		final Context context,
@@ -461,23 +486,20 @@ public class PawnStarsAgent extends ExpertPolicy
 		final long stopTime
 	)
 	{
-		// we need the type of node(min/max), upperbound, lowerbound, n score
-		// convert state into zobrist -> check hash
-		// -> if ok -> if lowerbound >= beta, return lowerbound
-		// -> if upperbound <= alpha, return upperbound
-		// zobrist hash **currently hardcoded for 8x8 grid**
-		zobristHash hashing = new zobristHash(2, 64);
-
-		// need to parse the context.state object
-
-		// Transposition table
-		HashMap<long, State> transpositionTable = new HashMap<long, State>;
+		//	if retrieve(n) == OK then /* Transposition table lookup */
+		//		if n.lowerbound >= beta then return n.lowerbound;
+		//		if n.upperbound <= alpha then return n.upperbound;
+		//		alpha := max(alpha, n.lowerbound);
+		//		beta := min(beta, n.upperbound);
 
 		final Trial trial = context.trial();
 		final State state = context.state();
 
-		// need to store the upper and lower bounds
-		//if (HashMap.containsKey(context.state()))
+		// Transposition table
+		HashMap<Long, State> transpositionTable = new HashMap<Long, State>();
+
+		// if (HashMap.containsKey(state.statehash()))
+		//	return state.statehash();
 		// 		if n.lowerbound >= beta then return n.lowerbound;
 		//		if n.upperbound <= alpha then return n.upperbound;
 		//		alpha := max(alpha, n.lowerbound);
@@ -500,10 +522,11 @@ public class PawnStarsAgent extends ExpertPolicy
 		final int numLegalMoves = legalMoves.size();
 		float alpha = inAlpha;
 		float beta = inBeta;
+		float score;
 		
 		if (mover == maximisingPlayer)
 		{
-			float score = ALPHA_INIT;
+			score = ALPHA_INIT;
 			
 			for (int i = 0; i < numLegalMoves; ++i)
 			{
@@ -529,7 +552,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 		else
 		{
-			float score = BETA_INIT;
+			score = BETA_INIT;
 			
 			for (int i = 0; i < numLegalMoves; ++i) {
 				final Context copyContext = new Context(context);
