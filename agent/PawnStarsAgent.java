@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.HashMap;
+import java.lang.Math;
 
 import expert_iteration.ExItExperience;
 import expert_iteration.ExItExperience.ExItExperienceState;
@@ -316,6 +318,49 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
+	public class zobristHash {
+
+		private long hash;
+		private final long[][] bitStrings;
+
+		public zobristHash(int pieces, int positions) {
+			// initialize the table with random bitstrings
+			bitStrings = new long[pieces][positions];
+			for (int i = 0; i < pieces; i++) {
+				for (int j = 0; j < positions; j++) {
+					bitStrings[i][j] = (((long) (Math.random() * Long.MAX_VALUE)) & 0xFFFFFFFF);
+				}
+			}
+			hash = 0;
+		}
+
+		public void reset() {
+			hash = 0;
+		}
+
+		public int add(int piece, int position) {
+			return xor(piece, position);
+		}
+
+		public int remove(int piece, int position) {
+			return xor(piece, position);
+		}
+
+		public int xor(int piece, int position) {
+			hash = hash ^ bitStrings[piece][position];
+			return hash;
+		}
+
+		public void set(int hash) {
+			this.hash = hash;
+		}
+
+		@Override
+		public int hashCode() {
+			return hash;
+		}
+	}
+
 	public float MTDF(
 			final Context context,
 			final int depth,
@@ -323,6 +368,7 @@ public class PawnStarsAgent extends ExpertPolicy
 			final int maximisingPlayer,
 			final long stopTime
 	) {
+
 		float g = f;
 		float upperBound = 100000000.f;
 		float lowerBound = -upperBound;
@@ -415,8 +461,27 @@ public class PawnStarsAgent extends ExpertPolicy
 		final long stopTime
 	)
 	{
+		// we need the type of node(min/max), upperbound, lowerbound, n score
+		// convert state into zobrist -> check hash
+		// -> if ok -> if lowerbound >= beta, return lowerbound
+		// -> if upperbound <= alpha, return upperbound
+		// zobrist hash **currently hardcoded for 8x8 grid**
+		zobristHash hashing = new zobristHash(2, 64);
+
+		// need to parse the context.state object
+
+		// Transposition table
+		HashMap<long, State> transpositionTable = new HashMap<long, State>;
+
 		final Trial trial = context.trial();
 		final State state = context.state();
+
+		// need to store the upper and lower bounds
+		//if (HashMap.containsKey(context.state()))
+		// 		if n.lowerbound >= beta then return n.lowerbound;
+		//		if n.upperbound <= alpha then return n.upperbound;
+		//		alpha := max(alpha, n.lowerbound);
+		//		beta := min(beta, n.upperbound);
 		
 		if (trial.over() || !context.state().active(maximisingPlayer))
 		{
@@ -461,37 +526,42 @@ public class PawnStarsAgent extends ExpertPolicy
 				if (alpha >= beta)	// beta cut-off
 					break;
 			}
-			
-			return score;
 		}
 		else
 		{
 			float score = BETA_INIT;
 			
-			for (int i = 0; i < numLegalMoves; ++i)
-			{
+			for (int i = 0; i < numLegalMoves; ++i) {
 				final Context copyContext = new Context(context);
 				final Move m = legalMoves.get(i);
 				game.apply(copyContext, m);
 				final float value = alphaBeta(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
-				
-				if (shouldInterrupt(stopTime))	// time to abort search
+
+				if (shouldInterrupt(stopTime))    // time to abort search
 				{
 					return 0;
 				}
 
 				if (value < score)
 					score = value;
-				
+
 				if (score < beta)
 					beta = score;
-				
-				if (alpha >= beta)	// alpha cut-off
+
+				if (alpha >= beta)    // alpha cut-off
 					break;
 			}
-			
-			return score;
 		}
+
+		// Transposition table storing
+		//if (score <= alpha)
+		//	upperBound = score;
+			// store n.upperbound;
+		//		n.upperbound := g; store n.upperbound;
+		//	if g > alpha and g < beta then
+		//		n.lowerbound := g; n.upperbound := g; store n.lowerbound, n.upperbound;
+		// 	if g >= beta then n.lowerbound := g; store n.lowerbound;
+		return score;
 	}
 
 	private float evalHeuristic(Context context, final int maximisingPlayer, State state) {
