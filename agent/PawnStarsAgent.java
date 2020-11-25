@@ -140,6 +140,16 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
+	private FastArrayList<Move> shuffleList(FastArrayList<Move> moves) {
+		FastArrayList<Move> newList = new FastArrayList<>();
+
+		while(!moves.isEmpty()) {
+			newList.add(moves.removeSwap(ThreadLocalRandom.current().nextInt(moves.size())));
+		}
+
+		return newList;
+	}
+
 	private boolean shouldInterrupt(long stopTime) {
 		return System.currentTimeMillis() >= stopTime || wantsInterrupt;
 	}
@@ -161,7 +171,6 @@ public class PawnStarsAgent extends ExpertPolicy
 		final int startDepth
 	)
 	{
-		game.board().graph().cells().get(0).
 		final long startTime = System.currentTimeMillis();
 		long stopTime = (maxSeconds > 0.0) ? startTime + (long) (maxSeconds * 1000) : Long.MAX_VALUE;
 
@@ -196,18 +205,31 @@ public class PawnStarsAgent extends ExpertPolicy
 
 			float score = rootAlphaInit;
 			float alpha = rootAlphaInit;
-			final float beta = rootBetaInit;
+			float beta = rootBetaInit;
 
 			// best move during this particular search
 			Move bestMove = sortedRootMoves.get(0);
 
-
-			for (int i = 0; i < numRootMoves; ++i)
-			{
+			float value;
+			for (int i = 0; i < numRootMoves; ++i) {
 				final Context copyContext = new Context(context);
 				final Move m = sortedRootMoves.get(i);
 				game.apply(copyContext, m);
-				final float value = MTDF(copyContext, searchDepth - 1, lastRoundScoredMoves.get(i).score, maximisingPlayer, stopTime);
+				value = pvs(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
+				if (value > alpha && value < beta) {
+					value = pvs(copyContext, searchDepth - 1, value, beta, maximisingPlayer, stopTime);
+				}
+
+//				if (i == 0) {
+//					value = pvs(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
+//				} else {
+//					value = pvs(copyContext, searchDepth - 1, beta - 1, beta, maximisingPlayer, stopTime);
+//					if (value > alpha && value < beta) {
+//						value = pvs(copyContext, searchDepth - 1, alpha, value, maximisingPlayer, stopTime);
+//					}
+//				}
+
+//				System.out.println("VAL: " + value);
 				if (shouldInterrupt(stopTime))	// time to abort search
 				{
 					bestMove = null;
@@ -233,6 +255,7 @@ public class PawnStarsAgent extends ExpertPolicy
 
 				if (alpha >= beta)		// beta cut-off
 					break;
+
 			}
 
 			// alpha-beta is over, this is iterative deepening stuff again
@@ -305,6 +328,122 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
+	private float pvs(
+			final Context context,
+			final int depth,
+			final float inAlpha,
+			final float inBeta,
+			final int maximisingPlayer,
+			final long stopTime
+	) {
+		final Trial trial = context.trial();
+		final State state = context.state();
+//
+
+		if (trial.over() || !context.state().active(maximisingPlayer))
+		{
+			// terminal node (at least for maximising player)
+			return (float) AIUtils.agentUtilities(context.state())[maximisingPlayer] * BETA_INIT;
+		}
+		else if (depth == 0)
+		{
+			return evalHeuristic(context, maximisingPlayer, state);
+		}
+
+		final Game game = context.game();
+		final int mover = state.playerToAgent(state.mover());
+
+		FastArrayList<Move> legalMoves = game.moves(context).moves();
+		legalMoves = shuffleList(legalMoves);
+		final int numLegalMoves = legalMoves.size();
+		float alpha = inAlpha;
+		float beta = inBeta;
+		float value;
+		if (mover == maximisingPlayer)
+		{
+			float score = ALPHA_INIT;
+
+			for (int i = 0; i < numLegalMoves; ++i)
+			{
+				final Context copyContext = new Context(context);
+				final Move m = legalMoves.get(i);
+				game.apply(copyContext, m);
+
+//				if (i == 0) {
+//					value = pvs(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
+//				} else {
+//					value = pvs(copyContext, depth - 1, beta - 1, beta, maximisingPlayer, stopTime);
+//					if (value > alpha && value < beta) {
+//						value = pvs(copyContext, depth - 1, alpha, value, maximisingPlayer, stopTime);
+//					}
+//				}
+
+				value = pvs(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
+				if (value > alpha && value < beta) {
+					value = pvs(copyContext, depth - 1, value, beta, maximisingPlayer, stopTime);
+				}
+
+				if (shouldInterrupt(stopTime))	// time to abort search
+				{
+					return 0;
+				}
+
+				if (value > score)
+					score = value;
+
+				if (score > alpha)
+					alpha = score;
+
+				if (alpha >= beta)	// beta cut-off
+					break;
+			}
+
+			return score;
+		}
+		else
+		{
+			float score = BETA_INIT;
+
+			for (int i = 0; i < numLegalMoves; ++i)
+			{
+				final Context copyContext = new Context(context);
+				final Move m = legalMoves.get(i);
+				game.apply(copyContext, m);
+
+//				if (i == 0) {
+//					value = pvs(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
+//				} else {
+//					value = pvs(copyContext, depth - 1, alpha, alpha + 1, maximisingPlayer, stopTime);
+//					if (value > alpha && value < beta) {
+//						value = pvs(copyContext, depth - 1, alpha, value, maximisingPlayer, stopTime);
+//					}
+//				}
+
+
+				value = pvs(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
+				if (value > alpha && value < beta) {
+					value = pvs(copyContext, depth - 1, alpha, value, maximisingPlayer, stopTime);
+				}
+
+				if (shouldInterrupt(stopTime))	// time to abort search
+				{
+					return 0;
+				}
+
+				if (value < score)
+					score = value;
+
+				if (score < beta)
+					beta = score;
+
+				if (alpha >= beta)	// alpha cut-off
+					break;
+			}
+
+			return score;
+		}
+	}
+
 	public float MTDF(
 			final Context context,
 			final int depth,
@@ -338,64 +477,6 @@ public class PawnStarsAgent extends ExpertPolicy
 	}
 
 
-
-
-	public float negabeta(
-			final Context context,
-			final int depth,
-			final float inAlpha,
-			final float inBeta,
-			final int maximisingPlayer,
-			final long stopTime
-	) {
-		final Trial trial = context.trial();
-		final State state = context.state();
-
-		if (trial.over() || !context.state().active(maximisingPlayer))
-		{
-			// terminal node (at least for maximising player)
-			return (float) AIUtils.agentUtilities(context.state())[maximisingPlayer] * BETA_INIT;
-		}
-		else if (depth == 0)
-		{
-			return evalHeuristic(context, maximisingPlayer, state);
-		}
-
-		final Game game = context.game();
-
-		final FastArrayList<Move> legalMoves = game.moves(context).moves();
-		final int numLegalMoves = legalMoves.size();
-		float alpha = inAlpha;
-		float beta = inBeta;
-		for (int i = 0; i < numLegalMoves; ++i) {
-			final Context copyContext = new Context(context);
-			final Move m = legalMoves.get(i);
-			game.apply(copyContext, m);
-			final float value = -negabeta(copyContext, depth - 1, -beta, -alpha, maximisingPlayer, stopTime);
-
-			if (shouldInterrupt(stopTime))	// time to abort search
-			{
-				return 0;
-			}
-
-			if (value > alpha)
-				alpha = value;
-			if (value >= beta)
-				return value;
-		}
-
-		return alpha;
-	}
-
-
-	private float storeResult(long hash, float value) {
-		transpositionTable.put(hash, value);
-		return value;
-	}
-
-
-
-	
 	/**
 	 * Recursive alpha-beta search function.
 	 * 

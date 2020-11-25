@@ -3,7 +3,7 @@ START GAME OPTIONS
 Board/Square
 Board Size/8x8
 END GAME OPTIONS
-RNG internal state=116,50,-13,30,-2,27,-43,-30
+RNG internal state=-50,14,-118,67,89,9,12,29
 Move=[Move:from=0,to=0,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=0,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=1,to=1,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=1,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=2,to=2,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=2,what=1,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
@@ -36,17 +36,5 @@ Move=[Move:from=60,to=60,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,level
 Move=[Move:from=61,to=61,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=61,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=62,to=62,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=62,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
 Move=[Move:from=63,to=63,state=-1,oriented=true,edge=-1,mover=0,levelMin=0,levelMax=0,actions=[ActionAddN:loc=63,what=2,count=1,state=-1,rotation=-1,onStacking=false,decision=false,type=Cell,invisible=null,masked=null]]
-Move=[Move:from=9,to=16,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=9,levelA=-1,locnB=16,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=53,to=44,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=53,levelA=-1,locnB=44,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=14,to=23,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=14,levelA=-1,locnB=23,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=44,to=35,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=44,levelA=-1,locnB=35,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=16,to=24,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=16,levelA=-1,locnB=24,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=35,to=27,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=35,levelA=-1,locnB=27,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=23,to=31,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=23,levelA=-1,locnB=31,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=48,to=41,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=48,levelA=-1,locnB=41,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=15,to=23,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=15,levelA=-1,locnB=23,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=54,to=45,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=54,levelA=-1,locnB=45,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=8,to=16,state=-1,oriented=true,edge=-1,mover=1,levelMin=0,levelMax=0,actions=[ActionMove:locnA=8,levelA=-1,locnB=16,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
-Move=[Move:from=62,to=53,state=-1,oriented=true,edge=-1,mover=2,levelMin=0,levelMax=0,actions=[ActionMove:locnA=62,levelA=-1,locnB=53,levelB=-1,stateB=-1,rotationB=-1,locnClaim=-1,onStacking=false,decision=true,typeFrom=Cell,typeTo=Cell]]
 rankings=0.0,0.0,0.0
 SANDBOX=false
