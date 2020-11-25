@@ -215,9 +215,9 @@ public class PawnStarsAgent extends ExpertPolicy
 				final Context copyContext = new Context(context);
 				final Move m = sortedRootMoves.get(i);
 				game.apply(copyContext, m);
-				value = pvs(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
+				value = scout(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
 				if (value > alpha && value < beta) {
-					value = pvs(copyContext, searchDepth - 1, value, beta, maximisingPlayer, stopTime);
+					value = scout(copyContext, searchDepth - 1, value, beta, maximisingPlayer, stopTime);
 				}
 
 //				if (i == 0) {
@@ -328,7 +328,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
-	private float pvs(
+	private float scout(
 			final Context context,
 			final int depth,
 			final float inAlpha,
@@ -378,9 +378,9 @@ public class PawnStarsAgent extends ExpertPolicy
 //					}
 //				}
 
-				value = pvs(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
+				value = scout(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
 				if (value > alpha && value < beta) {
-					value = pvs(copyContext, depth - 1, value, beta, maximisingPlayer, stopTime);
+					value = scout(copyContext, depth - 1, value, beta, maximisingPlayer, stopTime);
 				}
 
 				if (shouldInterrupt(stopTime))	// time to abort search
@@ -420,9 +420,9 @@ public class PawnStarsAgent extends ExpertPolicy
 //				}
 
 
-				value = pvs(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
+				value = scout(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
 				if (value > alpha && value < beta) {
-					value = pvs(copyContext, depth - 1, alpha, value, maximisingPlayer, stopTime);
+					value = scout(copyContext, depth - 1, alpha, value, maximisingPlayer, stopTime);
 				}
 
 				if (shouldInterrupt(stopTime))	// time to abort search
