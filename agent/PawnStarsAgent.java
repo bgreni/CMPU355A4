@@ -353,8 +353,8 @@ public class PawnStarsAgent extends ExpertPolicy
 		final Game game = context.game();
 		final int mover = state.playerToAgent(state.mover());
 
-		FastArrayList<Move> legalMoves = game.moves(context).moves();
-		legalMoves = shuffleList(legalMoves);
+		FastArrayList<Move> legalMoves = orderMoves(game.moves(context).moves(), context, maximisingPlayer);
+//		FastArrayList<Move> legalMoves = game.moves(context).moves();
 		final int numLegalMoves = legalMoves.size();
 		float alpha = inAlpha;
 		float beta = inBeta;
@@ -515,7 +515,8 @@ public class PawnStarsAgent extends ExpertPolicy
 		final Game game = context.game();
 		final int mover = state.playerToAgent(state.mover());
 		
-		final FastArrayList<Move> legalMoves = game.moves(context).moves();
+//		final FastArrayList<Move> legalMoves = game.moves(context).moves();
+		FastArrayList<Move> legalMoves = orderMoves(game.moves(context).moves(), context, maximisingPlayer);;
 		final int numLegalMoves = legalMoves.size();
 		float alpha = inAlpha;
 		float beta = inBeta;
@@ -576,6 +577,40 @@ public class PawnStarsAgent extends ExpertPolicy
 
 			return score;
 		}
+	}
+
+	private FastArrayList<Move> orderMoves(FastArrayList<Move> moves, Context context, int maximisingPlayer) {
+	FastArrayList<Move> newList = new FastArrayList<>();
+//
+		while(!moves.isEmpty()) {
+			newList.add(moves.removeSwap(ThreadLocalRandom.current().nextInt(moves.size())));
+		}
+
+
+//		List<Move> m = new ArrayList<>();
+//		moves.forEach((move) -> m.add(move));
+//		m.sort(new Comparator<Move>() {
+//			@Override
+//			public int compare(Move m1, Move m2) {
+//				Context c1 = new Context(context);
+//				Context c2 = new Context(context);
+//
+//				c1.game().apply(c1, m1);
+//				c2.game().apply(c2, m2);
+//
+//				State s1 = c1.state();
+//				State s2 = c2.state();
+//
+//				Float f1 = evalHeuristic(c1, maximisingPlayer, s1);
+//				Float f2 = evalHeuristic(c2, maximisingPlayer, s2);
+//
+//				return f1.compareTo(f2);
+//			}
+//		});
+//
+//		m.forEach((move) -> newList.add(move));
+
+		return newList;
 	}
 
 	private float evalHeuristic(Context context, final int maximisingPlayer, State state) {
