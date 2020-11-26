@@ -1,8 +1,5 @@
 package agent;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.Throwable;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -10,7 +7,6 @@ import expert_iteration.ExItExperience;
 import expert_iteration.ExItExperience.ExItExperienceState;
 import expert_iteration.ExpertPolicy;
 import game.Game;
-import main.FileHandling;
 import main.collections.FVector;
 import main.collections.FastArrayList;
 import metadata.ai.heuristics.Heuristics;
@@ -31,28 +27,20 @@ public class PawnStarsAgent extends ExpertPolicy
 {
 	// init alpha as negative infinity
 	private static final float ALPHA_INIT = Float.NEGATIVE_INFINITY;
-//	private static final float ALPHA_INIT = 0;
 
 	// init beta as positive infinity
 	private static final float BETA_INIT = -ALPHA_INIT;
-//	private static final float BETA_INIT = 10000;
-	
-	/** unused (I think) */
+
 	private static final float PARANOID_OPP_WIN_SCORE = 10000.f;
 	
-	/** We skip computing heuristics with absolute weight value lower than this
-	* TODO: maybe try tuning this value? */
+	/** We skip computing heuristics with absolute weight value lower than this*/
 	public static final float ABS_HEURISTIC_WEIGHT_THRESHOLD = 0.01f;
 	
-	/** Our heuristic value function estimator
-	TODO: set to some default in initAI(), so maybe try something else? */
+	/** Our heuristic value function estimator*/
 	private Heuristics heuristicValueFunction = null;
 	
 	/** If true, we read our heuristic function to use from game's metadata */
 	private final boolean heuristicsFromMetadata = true;
-	
-	/** We'll automatically return our move after at most this number of seconds if we only have one move */
-	protected double autoPlaySeconds = 0.0;
 	
 	/** Estimated score of the root node based on last-run search */
 	protected float estimatedRootScore = 0.f;
@@ -77,7 +65,6 @@ public class PawnStarsAgent extends ExpertPolicy
 	
 	/** Value estimates of moves available in root */
 	protected FVector rootValueEstimates = null;
-	protected FVector lastRoundEstimates = null;
 	
 	/** The number of players in the game we're currently playing */
 	protected int numPlayersInGame = 2;
@@ -96,8 +83,6 @@ public class PawnStarsAgent extends ExpertPolicy
 	
 	/** If true at end of a search, it means we searched full tree (probably proved a draw) */
 	protected boolean searchedFullTree = false;
-//	private final int numPlayers = 2;
-	final private Map<Long, Float> transpositionTable = new HashMap<Long, Float>();
 	
 	public PawnStarsAgent()
 	{
@@ -119,18 +104,20 @@ public class PawnStarsAgent extends ExpertPolicy
 			throw new MaxSecondsNotSetException("maxSeconds not greater than zero");
 		}
 
+		// This only happens very late in the game
 		provedWin = false;
 		final int depthLimit = maxDepth > 0 ? maxDepth : Integer.MAX_VALUE;
 		lastSearchedRootContext = context;
-		
-//		final long startTime = System.currentTimeMillis();
-//		final long stopTime = startTime + (long) (maxSeconds * 1000);
 		
 		lastReturnedMove = iterativeDeepening(game, context, maxSeconds, depthLimit, 1);
 		return lastReturnedMove;
 	}
 
 	private void shuffleMoves(Game game, Context context) {
+		/**
+		 * Used to randomly shuffle the available root moves at the beginning of every
+		 * move selection
+		 * */
 		currentRootMoves = new FastArrayList<Move>(game.moves(context).moves());
 
 		// Create a shuffled version of list of moves (random tie-breaking)
@@ -140,16 +127,6 @@ public class PawnStarsAgent extends ExpertPolicy
 		{
 			sortedRootMoves.add(tempMovesList.removeSwap(ThreadLocalRandom.current().nextInt(tempMovesList.size())));
 		}
-	}
-
-	private FastArrayList<Move> shuffleList(FastArrayList<Move> moves) {
-		FastArrayList<Move> newList = new FastArrayList<>();
-
-		while(!moves.isEmpty()) {
-			newList.add(moves.removeSwap(ThreadLocalRandom.current().nextInt(moves.size())));
-		}
-
-		return newList;
 	}
 
 	private boolean shouldInterrupt(long stopTime) {
@@ -180,10 +157,6 @@ public class PawnStarsAgent extends ExpertPolicy
 		
 		final int numRootMoves = sortedRootMoves.size();
 		final List<ScoredMove> scoredMoves = new ArrayList<ScoredMove>(sortedRootMoves.size());
-		List<ScoredMove> lastRoundScoredMoves = new ArrayList<ScoredMove>(numRootMoves);
-		for (int i = 0; i < numRootMoves; i++) {
-			lastRoundScoredMoves.add(new ScoredMove(null, 0.f));
-		}
 		
 		// Vector for visualisation purposes
 		rootValueEstimates = new FVector(currentRootMoves.size());
@@ -203,6 +176,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		while (searchDepth < maxDepth)
 		{
 			++searchDepth;
+			// assume we searched the whole tree until proven otherwise
 			searchedFullTree = true;
 
 			float score = rootAlphaInit;
@@ -213,24 +187,15 @@ public class PawnStarsAgent extends ExpertPolicy
 			Move bestMove = sortedRootMoves.get(0);
 
 			float value;
-			float b = beta;
-			float a = alpha;
 			for (int i = 0; i < numRootMoves; ++i) {
+				// play a move
 				final Context copyContext = new Context(context);
 				final Move m = sortedRootMoves.get(i);
 				game.apply(copyContext, m);
-//				value = -negamax(copyContext, searchDepth - 1, -beta, -alpha, opponent(maximisingPlayer), stopTime);
-				value = -negascout(copyContext, searchDepth - 1, -b, -a, opponent(maximisingPlayer), stopTime);
-				if (value > a && value < beta) {
-					value = -negascout(copyContext, searchDepth - 1, -beta, -score, opponent(maximisingPlayer), stopTime);
-				}
 
-//				value = scout(copyContext, searchDepth - 1, alpha, beta, maximisingPlayer, stopTime);
-//				if (value > alpha && value < beta) {
-//					value = scout(copyContext, searchDepth - 1, value, beta, maximisingPlayer, stopTime);
-//				}
+				// get the value of that move
+				value = -negamax(copyContext, searchDepth - 1, -beta, -alpha, opponent(maximisingPlayer), stopTime);
 
-//				System.out.println("VAL: " + value);
 				if (shouldInterrupt(stopTime))	// time to abort search
 				{
 					bestMove = null;
@@ -245,23 +210,19 @@ public class PawnStarsAgent extends ExpertPolicy
 
 				moveScores.set(i, value);
 
-				if (value > score)		// new best move found
+				if (value > score)
 				{
 					score = value;
 					bestMove = m;
 				}
 
-				if (score > a)		// new lower bound
-					a = score;
+				if (value > alpha)
+					alpha = score;
 
-				if (a >= beta)		// beta cut-off
+				if (alpha >= beta)
 					break;
 
-				b = a + 1;
-
 			}
-
-			// alpha-beta is over, this is iterative deepening stuff again
 
 			if (bestMove != null)		// search was not interrupted
 			{
@@ -340,7 +301,6 @@ public class PawnStarsAgent extends ExpertPolicy
 	) {
 		final Trial trial = context.trial();
 		final State state = context.state();
-//
 
 		if (trial.over() || !context.state().active(maximisingPlayer))
 		{
@@ -354,13 +314,18 @@ public class PawnStarsAgent extends ExpertPolicy
 
 		final Game game = context.game();
 
-//		final FastArrayList<Move> legalMoves = game.moves(context).moves();
-		FastArrayList<Move> legalMoves = orderMoves(game.moves(context).moves(), context, maximisingPlayer);;
+		// order moves randomly, hopefully sometimes it's better
+		FastArrayList<Move> legalMoves = orderMoves(game.moves(context).moves());
+
 		final int numLegalMoves = legalMoves.size();
 		for (int i = 0; i < numLegalMoves; i++) {
+
+			// play a move
 			final Context copyContext = new Context(context);
 			final Move m = legalMoves.get(i);
 			game.apply(copyContext, m);
+
+			// get the value of that move
 			final float score = -negamax(copyContext, depth - 1, -beta, -alpha, opponent(maximisingPlayer), stopTime);
 
 			if (shouldInterrupt(stopTime))	// time to abort search
@@ -381,344 +346,13 @@ public class PawnStarsAgent extends ExpertPolicy
 	}
 
 
-	private float negascout(
-			final Context context,
-			final int depth,
-			float alpha,
-			float beta,
-			final int maximisingPlayer,
-			final long stopTime
-	) {
-		final Trial trial = context.trial();
-		final State state = context.state();
-//
-
-		if (trial.over() || !context.state().active(maximisingPlayer))
-		{
-			// terminal node (at least for maximising player)
-			return (float) AIUtils.agentUtilities(context.state())[maximisingPlayer] * BETA_INIT;
-		}
-		else if (depth == 0)
-		{
-			return evalHeuristic(context, maximisingPlayer, state);
-		}
-
-		final Game game = context.game();
-		float score;
-		float b = beta;
-		float a = alpha;
-//		final FastArrayList<Move> legalMoves = game.moves(context).moves();
-		FastArrayList<Move> legalMoves = orderMoves(game.moves(context).moves(), context, maximisingPlayer);;
-		final int numLegalMoves = legalMoves.size();
-		for (int i = 0; i < numLegalMoves; i++) {
-			final Context copyContext = new Context(context);
-			final Move m = legalMoves.get(i);
-			game.apply(copyContext, m);
-
-			score = -negascout(copyContext, depth - 1, -b, -a, opponent(maximisingPlayer), stopTime);
-			if (score > alpha && score < beta) {
-				score = -negascout(copyContext, depth - 1, -beta, -score, opponent(maximisingPlayer), stopTime);
-			}
-
-			if (shouldInterrupt(stopTime))	// time to abort search
-			{
-				return 0;
-			}
-
-
-			if (score > a)
-				a = score;
-
-			if (a >= beta)
-				break;
-
-			b = a + 1;
-		}
-
-		return a;
-	}
-
-	private float scout(
-			final Context context,
-			final int depth,
-			final float inAlpha,
-			final float inBeta,
-			final int maximisingPlayer,
-			final long stopTime
-	) {
-		final Trial trial = context.trial();
-		final State state = context.state();
-//
-
-		if (trial.over() || !context.state().active(maximisingPlayer))
-		{
-			// terminal node (at least for maximising player)
-			return (float) AIUtils.agentUtilities(context.state())[maximisingPlayer] * BETA_INIT;
-		}
-		else if (depth == 0)
-		{
-			return evalHeuristic(context, maximisingPlayer, state);
-		}
-
-		final Game game = context.game();
-		final int mover = state.playerToAgent(state.mover());
-
-		FastArrayList<Move> legalMoves = orderMoves(game.moves(context).moves(), context, maximisingPlayer);
-//		FastArrayList<Move> legalMoves = game.moves(context).moves();
-		final int numLegalMoves = legalMoves.size();
-		float alpha = inAlpha;
-		float beta = inBeta;
-		float value;
-		if (mover == maximisingPlayer)
-		{
-			float score = ALPHA_INIT;
-
-			for (int i = 0; i < numLegalMoves; ++i)
-			{
-				final Context copyContext = new Context(context);
-				final Move m = legalMoves.get(i);
-				game.apply(copyContext, m);
-
-//				if (i == 0) {
-//					value = pvs(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
-//				} else {
-//					value = pvs(copyContext, depth - 1, beta - 1, beta, maximisingPlayer, stopTime);
-//					if (value > alpha && value < beta) {
-//						value = pvs(copyContext, depth - 1, alpha, value, maximisingPlayer, stopTime);
-//					}
-//				}
-
-				value = scout(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
-				if (value > alpha && value < beta) {
-					value = scout(copyContext, depth - 1, value, beta, maximisingPlayer, stopTime);
-				}
-
-				if (shouldInterrupt(stopTime))	// time to abort search
-				{
-					return 0;
-				}
-
-				if (value > score)
-					score = value;
-
-				if (score > alpha)
-					alpha = score;
-
-				if (alpha >= beta)	// beta cut-off
-					break;
-			}
-
-			return score;
-		}
-		else
-		{
-			float score = BETA_INIT;
-
-			for (int i = 0; i < numLegalMoves; ++i)
-			{
-				final Context copyContext = new Context(context);
-				final Move m = legalMoves.get(i);
-				game.apply(copyContext, m);
-
-//				if (i == 0) {
-//					value = pvs(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
-//				} else {
-//					value = pvs(copyContext, depth - 1, alpha, alpha + 1, maximisingPlayer, stopTime);
-//					if (value > alpha && value < beta) {
-//						value = pvs(copyContext, depth - 1, alpha, value, maximisingPlayer, stopTime);
-//					}
-//				}
-
-
-				value = scout(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
-				if (value > alpha && value < beta) {
-					value = scout(copyContext, depth - 1, alpha, value, maximisingPlayer, stopTime);
-				}
-
-				if (shouldInterrupt(stopTime))	// time to abort search
-				{
-					return 0;
-				}
-
-				if (value < score)
-					score = value;
-
-				if (score < beta)
-					beta = score;
-
-				if (alpha >= beta)	// alpha cut-off
-					break;
-			}
-
-			return score;
-		}
-	}
-
-	public float MTDF(
-			final Context context,
-			final int depth,
-			final float f,
-			final int maximisingPlayer,
-			final long stopTime
-	) {
-		float g = f;
-		float upperBound = 1000000.f;
-		float lowerBound = -upperBound;
-		int numIters = 0;
-		while (lowerBound < upperBound) {
-			numIters++;
-			float beta = Math.max(g, lowerBound + 1);
-			final Context copyContext = new Context(context);
-			g = alphaBeta(copyContext, depth, beta-1, beta, maximisingPlayer, stopTime);
-//			System.out.println("G: " + g);
-			if (g < beta) {
-				upperBound = g;
-			} else {
-				lowerBound = g;
-			}
-//			System.out.println("BOUNDS: " + lowerBound + " " + upperBound);
-			if (shouldInterrupt(stopTime)) {
-				System.out.println("ITERS_INTER: " + numIters);
-				return g;
-			}
-		}
-		System.out.println("ITERS: " + numIters);
-		return g;
-	}
-
-
-	/**
-	 * Recursive alpha-beta search function.
-	 * 
-	 * @param context
-	 * @param depth
-	 * @param inAlpha
-	 * @param inBeta
-	 * @param maximisingPlayer Who is the maximising player?
-	 * @param stopTime
-	 * @return (heuristic) evaluation of the reached state, from perspective of maximising player.
-	 */
-	public float alphaBeta
-	(
-		final Context context,
-		final int depth,
-		final float inAlpha,
-		final float inBeta,
-		final int maximisingPlayer,
-		final long stopTime
-	)
-	{
-		final Trial trial = context.trial();
-		final State state = context.state();
-//
-
-		if (trial.over() || !context.state().active(maximisingPlayer))
-		{
-			// terminal node (at least for maximising player)
-			return (float) AIUtils.agentUtilities(context.state())[maximisingPlayer] * BETA_INIT;
-		}
-		else if (depth == 0)
-		{
-			return evalHeuristic(context, maximisingPlayer, state);
-		}
-		
-		final Game game = context.game();
-		final int mover = state.playerToAgent(state.mover());
-		
-//		final FastArrayList<Move> legalMoves = game.moves(context).moves();
-		FastArrayList<Move> legalMoves = orderMoves(game.moves(context).moves(), context, maximisingPlayer);;
-		final int numLegalMoves = legalMoves.size();
-		float alpha = inAlpha;
-		float beta = inBeta;
-		
-		if (mover == maximisingPlayer)
-		{
-			float score = ALPHA_INIT;
-			
-			for (int i = 0; i < numLegalMoves; ++i)
-			{
-				final Context copyContext = new Context(context);
-				final Move m = legalMoves.get(i);
-				game.apply(copyContext, m);
-				final float value = alphaBeta(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
-				
-				if (shouldInterrupt(stopTime))	// time to abort search
-				{
-					return 0;
-				}
-
-				if (value > score)
-					score = value;
-
-				if (score > alpha)
-					alpha = score;
-
-				if (alpha >= beta)	// beta cut-off
-					break;
-			}
-			
-			return score;
-		}
-		else
-		{
-			float score = BETA_INIT;
-			
-			for (int i = 0; i < numLegalMoves; ++i)
-			{
-				final Context copyContext = new Context(context);
-				final Move m = legalMoves.get(i);
-				game.apply(copyContext, m);
-				final float value = alphaBeta(copyContext, depth - 1, alpha, beta, maximisingPlayer, stopTime);
-				
-				if (shouldInterrupt(stopTime))	// time to abort search
-				{
-					return 0;
-				}
-
-				if (value < score)
-					score = value;
-				
-				if (score < beta)
-					beta = score;
-				
-				if (alpha >= beta)	// alpha cut-off
-					break;
-			}
-
-			return score;
-		}
-	}
-
-	private FastArrayList<Move> orderMoves(FastArrayList<Move> moves, Context context, int maximisingPlayer) {
-	FastArrayList<Move> newList = new FastArrayList<>();
+	private FastArrayList<Move> orderMoves(FastArrayList<Move> moves) {
+		// randomly order moves
+		FastArrayList<Move> newList = new FastArrayList<>();
 		while(!moves.isEmpty()) {
 			newList.add(moves.removeSwap(ThreadLocalRandom.current().nextInt(moves.size())));
 		}
 
-
-//		List<Move> m = new ArrayList<>();
-//		moves.forEach((move) -> m.add(move));
-//		m.sort(new Comparator<Move>() {
-//			@Override
-//			public int compare(Move m1, Move m2) {
-//				Context c1 = new Context(context);
-//				Context c2 = new Context(context);
-//
-//				c1.game().apply(c1, m1);
-//				c2.game().apply(c2, m2);
-//
-//				State s1 = c1.state();
-//				State s2 = c2.state();
-//
-//				Float f1 = evalHeuristic(c1, maximisingPlayer, s1);
-//				Float f2 = evalHeuristic(c2, maximisingPlayer, s2);
-//
-//				return f1.compareTo(f2);
-//			}
-//		});
-//
-//		m.forEach((move) -> newList.add(move));
-//
 		return newList;
 	}
 
@@ -762,15 +396,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		
 		return opponents;
 	}
-	
-	/**
-	 * Converts a score into a value estimate in [-1, 1]. Useful for visualisations.
-	 * 
-	 * @param score
-	 * @param alpha 
-	 * @param beta 
-	 * @return Value estimate in [-1, 1] from unbounded (heuristic) score.
-	 */
+
 	public double scoreToValueEst(final float score, final float alpha, final float beta)
 	{
 		if (score == alpha)
@@ -783,7 +409,7 @@ public class PawnStarsAgent extends ExpertPolicy
 		// observed so far.
 		return -0.8 + (0.8 - -0.8) * ((score - minHeuristicEval) / (maxHeuristicEval - minHeuristicEval));
 	}
-	
+
 	//-------------------------------------------------------------------------
 	
 	@Override
@@ -841,6 +467,10 @@ public class PawnStarsAgent extends ExpertPolicy
 		
 		return game.isAlternatingMoveGame();
 	}
+
+	/**
+	 * Mostly stuff for the engine to do visualizations and stuff
+	 * */
 	
 	@Override
 	public double estimateValue()
@@ -896,26 +526,17 @@ public class PawnStarsAgent extends ExpertPolicy
     				FVector.zeros(currentRootMoves.size())
     			);
 	}
-	
+
 	//-------------------------------------------------------------------------
 	
 	/**
 	 * Wrapper for score + move, used for sorting moves based on scores.
-	 * 
-	 * @author Dennis Soemers
 	 */
 	private class ScoredMove implements Comparable<ScoredMove>
 	{
-		/** The move */
 		public final Move move;
-		/** The move's score */
 		public final float score;
-		
-		/**
-		 * Constructor
-		 * @param move
-		 * @param score
-		 */
+
 		public ScoredMove(final Move move, final float score)
 		{
 			this.move = move;
@@ -935,31 +556,11 @@ public class PawnStarsAgent extends ExpertPolicy
 		}
 	}
 
+	// just a custom exception for any case where no time limit is given to the agent
 	private class MaxSecondsNotSetException extends RuntimeException {
 		public MaxSecondsNotSetException(String message) {
 			super(message);
 		}
-	}
-
-
-
-
-
-
-	private class Result {
-		public Move move;
-		public float score;
-
-		public Result(Move move, float score) {
-			this.move = move;
-			this.score = score;
-		}
-	}
-
-
-
-	private float nextGuess(final float alpha, final float beta, final float subtreeCount) {
-		return alpha + (beta - alpha) * (subtreeCount - 1) / subtreeCount;
 	}
 
 	private int opponent(int player) {
